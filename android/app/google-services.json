@@ -1,0 +1,39 @@
+  {
+  "project_info": {
+    "project_number": "708799553165",
+    "project_id": "jarvia1",
+    "storage_bucket": "jarvia1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:708799553165:android:c113734c1cea33321eccc4",
+        "android_client_info": {
+          "package_name": "jarvia180.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "708799553165-esf1rui8mo9v2v40jbb787if29gd8qd7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAFhWu_bj71PqaO9_2VKjtasQNqoSWinE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "708799553165-esf1rui8mo9v2v40jbb787if29gd8qd7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
