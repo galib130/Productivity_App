@@ -113,6 +113,8 @@ class TestAppState extends State<TestApp>{
     final Stream <QuerySnapshot> quadrant2=FirebaseFirestore.instance.collection('Users').doc(uid).collection('Quadrant2').orderBy('Timestamp').snapshots(includeMetadataChanges: true);
     var quadrant1_complete = FirebaseFirestore.instance.collection('Users').doc(uid).collection('Quadrant1_Complete');
     var quadrant2_complete = FirebaseFirestore.instance.collection('Users').doc(uid).collection('Quadrant2_Complete');
+    DocumentReference set_date_time=  FirebaseFirestore.instance.collection('Users').doc(uid).collection('date and time ').
+    doc('date and time set');
     final suggestList=[];
     //call suggestlist
     setState(() {
@@ -174,7 +176,9 @@ class TestAppState extends State<TestApp>{
 
         if (flag == 0) {
           print(task);
-          users.doc().set({"Name": task, "Timestamp": time, "ticked": false,"setTime": _datecontroller.text+'    '+_timecontroller.text , "displayName": _namecontroller.text},
+          users.doc().set({"Name": task, "Timestamp": time, "ticked": false,"setTime": _datecontroller.text+'    '+_timecontroller.text , "displayName": _namecontroller.text,
+          "difference":time_difference+date_difference
+          },
               SetOptions(merge: true));
         }
         else {
@@ -184,6 +188,7 @@ class TestAppState extends State<TestApp>{
             "ticked": false,
             "setTime": _datecontroller.text+'    '+_timecontroller.text,
             "displayName": _namecontroller.text,
+            "difference": time_difference+date_difference,
           }, SetOptions(merge: true));
         }
 
@@ -303,6 +308,9 @@ class TestAppState extends State<TestApp>{
     }
     //Function to select date
     Future<Null> _selectDate(BuildContext context) async {
+      
+
+
       final pickedDate = await showDatePicker(
           context: context,
           initialDate: currentDate,
@@ -326,10 +334,23 @@ class TestAppState extends State<TestApp>{
                date_difference =  currentDate
                    .difference(datenow)
                    .inSeconds;
+               set_date_time.set({"date difference":currentDate
+                   .difference(datenow)
+                   .inSeconds,
+
+               },SetOptions(merge: true));
+
                totalDate = totalDate.add(Duration(seconds: date_difference as int));
 
              }
-             print(date_difference.toString()+'date difference');
+             else{
+
+               set_date_time.set({"date difference":0
+
+               },SetOptions(merge: true));
+
+             }
+          print(date_difference.toString()+'date difference');
           currentDate=DateTime.now().subtract(Duration(days: 3));
 
         }
@@ -340,6 +361,7 @@ class TestAppState extends State<TestApp>{
     // Function to select time
     Future<Null> _selectTime(BuildContext context) async {
       var temp=TimeOfDay.now();
+
       final  TimeOfDay? pickedTime = await showTimePicker(context: context, initialTime:  temp);
       if (pickedTime != null && pickedTime != time)
         setState(() {
@@ -357,6 +379,10 @@ class TestAppState extends State<TestApp>{
            // time_difference= difference;
 
             time_difference=(time.minute*60+time.hour*3600)-datenow;
+
+            set_date_time.set({
+              "time difference" : (time.minute*60+time.hour*3600)-datenow,
+            },SetOptions(merge: true));
 
              totalDate=totalDate.add(Duration(seconds: time_difference as int));
              //print(difference.toString() + "time");
@@ -537,9 +563,12 @@ class TestAppState extends State<TestApp>{
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),),
-                    onPressed: (){  //ADD button
+                    onPressed: ()async{  //ADD button
                     add();
                     print(difference.toString() + 'difference');
+                    var get_date_time_data = await set_date_time.get();
+
+                    var date_time_data = get_date_time_data.data() as Map;
                     if(date_difference!=0|| time_difference!=0) {
                       setState(() {
                       difference=date_difference+time_difference;
@@ -549,7 +578,7 @@ class TestAppState extends State<TestApp>{
                           title: _namecontroller.text,
                           body: 'Hey you added this task',
                           scheduledDate: DateTime.now().add(
-                              Duration(seconds: difference)));
+                              Duration(seconds: (date_time_data['date difference']+date_time_data['time difference']))));
 
                       totalDate=compareDate;
                         date_difference=0;
@@ -620,7 +649,7 @@ class TestAppState extends State<TestApp>{
                    ) ;
                    },
                  onSuggestionSelected: (suggestion){
-    _namecontroller.text= suggestion.toString() ;
+              _namecontroller.text= suggestion.toString() ;
     },
           hideOnLoading: true,
 
