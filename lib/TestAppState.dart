@@ -49,14 +49,13 @@ class TestAppState extends State<TestApp>{
   int  difference = 0;
   static const routename ='/profile';
 
-  CollectionReference tasklist=FirebaseFirestore.instance.collection('task');
-  CollectionReference firebaselistinstance= FirebaseFirestore.instance.collection('items');
+
 
 
   //call to add complete task and then delete the task
   void checkbox(String documnent,bool? value, DocumentSnapshot documentSnapshot) async{
-    DocumentReference quadrant1  = FirebaseFirestore.instance.collection('Users').doc(uid).collection('Mytask').doc(documnent);
-      DocumentReference quadrant2 = FirebaseFirestore.instance.collection('Users').doc(uid).collection('Quadrant2').doc(documnent);
+   CollectionReference quadrant1  = FirebaseFirestore.instance.collection('Users').doc(uid).collection('Mytask');
+      CollectionReference quadrant2 = FirebaseFirestore.instance.collection('Users').doc(uid).collection('Quadrant2');
       CollectionReference completed_quadrant1= FirebaseFirestore.instance.collection('Users').doc(uid).collection('Quadrant1_Complete');
       CollectionReference completed_quadrant2= FirebaseFirestore.instance.collection('Users').doc(uid).collection('Quadrant2_Complete');
       DateTime currentDate =DateTime.now();
@@ -105,14 +104,11 @@ class TestAppState extends State<TestApp>{
 
 
       Future.delayed(const Duration(milliseconds: 700), () {
-        if(change_state==0)
-          quadrant1.delete();
-          else
-            quadrant2.delete();
+        documentSnapshot.reference.delete();
+
       });
   }
   Widget build(BuildContext context) {
-    final Stream <DocumentSnapshot>firebaselist = FirebaseFirestore.instance.collection('items').doc('itemlist').snapshots(includeMetadataChanges: true) ;
     final Stream <QuerySnapshot> users=FirebaseFirestore.instance.collection('Users').doc(uid).collection('Mytask').orderBy('Timestamp').snapshots(includeMetadataChanges: true);
     final Stream <QuerySnapshot> quadrant2=FirebaseFirestore.instance.collection('Users').doc(uid).collection('Quadrant2').orderBy('Timestamp').snapshots(includeMetadataChanges: true);
     var quadrant1_complete = FirebaseFirestore.instance.collection('Users').doc(uid).collection('Quadrant1_Complete');
@@ -160,12 +156,11 @@ class TestAppState extends State<TestApp>{
         String uid = auth.currentUser!.uid.toString();
         DateTime currentDate = DateTime.now();
         Timestamp time = Timestamp.fromDate(currentDate);
-        Timestamp currentTime = Timestamp.fromDate(currentDate);
-        DocumentReference users = FirebaseFirestore.instance.collection('Users')
-            .doc(uid).collection('Mytask')
-            .doc(task);
-        DocumentReference quadrant2 = FirebaseFirestore.instance.collection(
-            'Users').doc(uid).collection('Quadrant2').doc(task);
+        CollectionReference users = FirebaseFirestore.instance.collection('Users')
+            .doc(uid).collection('Mytask');
+
+        CollectionReference quadrant2 = FirebaseFirestore.instance.collection(
+            'Users').doc(uid).collection('Quadrant2');
         DocumentReference session = FirebaseFirestore.instance.collection(
             "Users").doc(uid).collection("session_time").doc("time");
         DocumentReference collectquadrant2 = FirebaseFirestore.instance
@@ -179,11 +174,11 @@ class TestAppState extends State<TestApp>{
 
         if (flag == 0) {
           print(task);
-          users.set({"Name": task, "Timestamp": time, "ticked": false,"setTime": _datecontroller.text+'    '+_timecontroller.text , "displayName": _namecontroller.text},
+          users.doc().set({"Name": task, "Timestamp": time, "ticked": false,"setTime": _datecontroller.text+'    '+_timecontroller.text , "displayName": _namecontroller.text},
               SetOptions(merge: true));
         }
         else {
-          quadrant2.set({
+          quadrant2.doc().set({
             "Name": task,
             "Timestamp": time,
             "ticked": false,
@@ -289,10 +284,7 @@ class TestAppState extends State<TestApp>{
     //Function to initially add a task
     void add(){
         if(change_state==0) {           //flag 0 for quadrant 1
-          quadrant1_complete.doc('doc id').set(
-              {'task': _namecontroller.text}, SetOptions(merge: true));
-          firebaselistinstance.doc('itemlist').update(
-              {'itemvalue': FieldValue.arrayUnion([_namecontroller.text])});
+
           Add_Data_to_Backend(_namecontroller.text.trim() + _datecontroller.text.trim() + _timecontroller.text.trim(),
               change_state); // calls the function which adds to firebase
         }
@@ -551,19 +543,14 @@ class TestAppState extends State<TestApp>{
                     if(date_difference!=0|| time_difference!=0) {
                       setState(() {
                       difference=date_difference+time_difference;
-                      var rng= new Random();
-                      var notification_id=rng.nextInt(100);
+
                       NotificationApi.showScheduledNotification(
-                          id: _namecontroller.text.hashCode,
+                          id: _namecontroller.text.hashCode + _datecontroller.text.hashCode+_timecontroller.text.hashCode,
                           title: _namecontroller.text,
                           body: 'Hey you added this task',
                           scheduledDate: DateTime.now().add(
                               Duration(seconds: difference)));
-                      DocumentReference users = FirebaseFirestore.instance.collection('Users')
-                          .doc(uid).collection('Mytask')
-                          .doc(_namecontroller.text);
-                      DocumentReference quadrant2 = FirebaseFirestore.instance.collection(
-                          'Users').doc(uid).collection('Quadrant2').doc(_namecontroller.text);
+
                       totalDate=compareDate;
                         date_difference=0;
                         time_difference=0;
