@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:jarvia/main.dart';
 
 class AddList_State  extends StatelessWidget{
   bool _value = false;
@@ -63,14 +65,15 @@ class AddList_State  extends StatelessWidget{
             children: snapshot.data!.docs.map((DocumentSnapshot document) {
             Map<dynamic, dynamic> data = document.data()! as Map<dynamic, dynamic>;
             return Dismissible(key: UniqueKey(),
-                onDismissed:(DismissDirection){
+                onDismissed:(DismissDirection)async{
                   //ondismissed(data['Name']);
+                  await flutterLocalNotificationsPlugin.cancel(data['notification id'].hashCode);
                   document.reference.delete();
                   },
                 child: GestureDetector(
                   onLongPress: (){
 
-                createAlertDialog(BuildContext, context,data['Name'].toString(),document);
+                createAlertDialog(BuildContext, context,data['displayName'].toString(),document);
                 },
                   child:
                       ListTile(
@@ -85,7 +88,7 @@ class AddList_State  extends StatelessWidget{
                                    Expanded(
                                      child: Text(data['displayName'].toString(),style:
                                  new TextStyle(
-                                     fontSize: 24
+                                     fontSize: 20
                                  ),),
                                    ),
                                    Checkbox(

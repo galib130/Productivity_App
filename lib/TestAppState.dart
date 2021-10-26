@@ -39,6 +39,8 @@ class TestAppState extends State<TestApp>{
   TextEditingController _namecontroller = TextEditingController();
   TextEditingController _timecontroller= TextEditingController();
   TextEditingController _datecontroller= TextEditingController();
+  TextEditingController _secondcontroller= TextEditingController();
+
   String Task='';
   DateTime currentDate =DateTime.now();
   DateTime pickedDate =DateTime.now();
@@ -174,10 +176,17 @@ class TestAppState extends State<TestApp>{
         DocumentReference avg_q1_document= FirebaseFirestore.instance.collection('Users').doc(uid).collection("average_session").doc('Quadrant1');
         DocumentReference avg_q2_document= FirebaseFirestore.instance.collection('Users').doc(uid).collection("average_session").doc('Quadrant2');
 
+
+        // set_date_time.set({"notification id": FieldValue.increment(1)},SetOptions(merge: true));
+        // var get_date_time_data = await set_date_time.get();
+        // var date_time_data = get_date_time_data.data() as Map;
         if (flag == 0) {
           print(task);
-          users.doc().set({"Name": task, "Timestamp": time, "ticked": false,"setTime": _datecontroller.text+'    '+_timecontroller.text , "displayName": _namecontroller.text,
-          "difference":time_difference+date_difference
+          print(_namecontroller.text);
+          users.doc().set({"Name": task, "Timestamp": time, "difference":time_difference+date_difference, "ticked": false,"setTime": _datecontroller.text+'    '+_timecontroller.text , "displayName": _namecontroller.text,
+            "notification id": _datecontroller.text.trim()+_timecontroller.text.trim()+_secondcontroller.text.trim(),
+
+
           },
               SetOptions(merge: true));
         }
@@ -189,6 +198,8 @@ class TestAppState extends State<TestApp>{
             "setTime": _datecontroller.text+'    '+_timecontroller.text,
             "displayName": _namecontroller.text,
             "difference": time_difference+date_difference,
+            "notification id":_datecontroller.text.trim()+_timecontroller.text.trim()+_secondcontroller.text.trim(),
+
           }, SetOptions(merge: true));
         }
 
@@ -295,7 +306,7 @@ class TestAppState extends State<TestApp>{
         }
         else       //flag1 for quadrant 2
         {
-        Add_Data_to_Backend(_namecontroller.text,change_state);
+        Add_Data_to_Backend(_namecontroller.text.trim() + _datecontroller.text.trim() + _timecontroller.text.trim(),change_state);
         }
 
     }
@@ -325,6 +336,9 @@ class TestAppState extends State<TestApp>{
           _datecontroller.clear();
           _datecontroller.text= currentDate.day.toString()+'-'+ currentDate.month.toString()+'-'+
               currentDate.year.toString();
+
+          _secondcontroller.text=DateTime.now().second.toString()+DateTime.now().hour.toString()
+          +DateTime.now().minute.toString()+DateTime.now().millisecond.toString()+TimeOfDay.now().period.toString();
           DateTime datenow=DateTime.now();
           date_picked=0;
 
@@ -379,7 +393,8 @@ class TestAppState extends State<TestApp>{
            // time_difference= difference;
 
             time_difference=(time.minute*60+time.hour*3600)-datenow;
-
+          _secondcontroller.text=DateTime.now().second.toString()+DateTime.now().hour.toString()
+              +DateTime.now().minute.toString()+DateTime.now().millisecond.toString()+TimeOfDay.now().period.toString();
             set_date_time.set({
               "time difference" : (time.minute*60+time.hour*3600)-datenow,
             },SetOptions(merge: true));
@@ -564,17 +579,21 @@ class TestAppState extends State<TestApp>{
                         borderRadius: BorderRadius.circular(50),
                       ),),
                     onPressed: ()async{  //ADD button
-                    add();
-                    print(difference.toString() + 'difference');
-                    var get_date_time_data = await set_date_time.get();
 
+                      add();
+                    print(difference.toString() + 'difference');
+
+
+                    var get_date_time_data = await set_date_time.get();
                     var date_time_data = get_date_time_data.data() as Map;
+
                     if(date_difference!=0|| time_difference!=0) {
                       setState(() {
                       difference=date_difference+time_difference;
 
                       NotificationApi.showScheduledNotification(
-                          id: _namecontroller.text.hashCode + _datecontroller.text.hashCode+_timecontroller.text.hashCode,
+                          id: ( _datecontroller.text.trim() + _timecontroller.text.trim()+_secondcontroller.text
+                          .trim()).hashCode,
                           title: _namecontroller.text,
                           body: 'Hey you added this task',
                           scheduledDate: DateTime.now().add(
@@ -592,7 +611,15 @@ class TestAppState extends State<TestApp>{
                     else{
                       print('not notifying');
                     }
+                      set_date_time.set({
+                        "date difference" : 0,
+                        "time difference": 0,
+
+                      });
+                    _datecontroller.clear();
+                    _timecontroller.clear();
                     _namecontroller.clear();
+                    _secondcontroller.clear();
 
                   },
                     child: Text('Set Notification'),
@@ -617,6 +644,7 @@ class TestAppState extends State<TestApp>{
                        _namecontroller.clear();
                        _timecontroller.clear();
                        _datecontroller.clear();
+                       _secondcontroller.clear();
 
                      },
                      icon: Icon(Icons.add_box_rounded,),
