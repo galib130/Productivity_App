@@ -1,20 +1,15 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-
-
-
 class AddList_State  extends StatelessWidget{
   bool _value = false;
   List Textadd ;
-  Future<void>Function(String) ondismissed;
+
   Function(String,bool,DocumentSnapshot) checkbox;
-  Future<void> Function(String,String) update;
+
   Stream<DocumentSnapshot> firebaselist;
   Stream<QuerySnapshot>firebasequery;
 
@@ -49,8 +44,8 @@ class AddList_State  extends StatelessWidget{
       });
     }
    int flag;
-  AddList_State({required this.Textadd,  required this.ondismissed,required this.firebaselist,required this.firebasequery,required this.flag,
-  required this.checkbox,required this.update,
+  AddList_State({required this.Textadd,required this.firebaselist,required this.firebasequery,required this.flag,
+  required this.checkbox,
   });
   List list1=[''];
   Widget build(BuildContext context){

@@ -52,67 +52,7 @@ class TestAppState extends State<TestApp>{
   CollectionReference tasklist=FirebaseFirestore.instance.collection('task');
   CollectionReference firebaselistinstance= FirebaseFirestore.instance.collection('items');
 
-// call to delete task
-  Future<void> dismiss(String something)async{
-      DocumentReference quadrant1_doc = FirebaseFirestore.instance.collection('Users').doc(uid).collection('Mytask').doc(something);
-      DocumentReference quadrant2_doc = FirebaseFirestore.instance.collection('Users').doc(uid).collection('Quadrant2').doc(something);
 
-      if(change_state==0)
-        quadrant1_doc.delete();  //Deletes a task
-      else
-        quadrant2_doc.delete();
-      await flutterLocalNotificationsPlugin.cancel(something.hashCode);
-  return;
-
-  }
-  //call to edit
-  Future<void> update(String something,String? data) async{
-    FirebaseAuth auth= FirebaseAuth.instance;
-    String uid =auth.currentUser!.uid.toString();
-
-
-
-    print(data);
-
-
-      if(data!=null) {
-        DateTime currentDate = DateTime.now();
-        // Timestamp time = Timestamp.fromDate(currentDate);
-
-        if (change_state == 0) {
-          DocumentReference users = FirebaseFirestore.instance.collection('Users').doc(uid).collection('Mytask').doc(something);
-
-          DocumentReference prev_quadrant1 = FirebaseFirestore.instance.collection('Users').doc(uid).collection('Mytask').doc(data);
-          var q1_snapshot=await prev_quadrant1.get();
-          var q1_doc = q1_snapshot.data()! as Map;
-
-
-          users.set({
-            "Name": something,
-            "Timestamp": q1_doc["Timestamp"],
-            "ticked": false,
-            "displayName": something,
-
-
-          });
-          prev_quadrant1.delete();
-        } //Deletes a task
-        else {
-          DocumentReference quadrant2_doc = FirebaseFirestore.instance.collection('Users').doc(uid).collection('Quadrant2').doc(something);
-
-          DocumentReference prev_quadrant2 = FirebaseFirestore.instance.collection('Users').doc(uid).collection('Quadrant2').doc(data);
-          var q2_snapshot = await prev_quadrant2.get();
-          var q2_doc = q2_snapshot.data()! as Map;
-          quadrant2_doc.set({
-            "Name": something,
-            "Timestamp": q2_doc["Timestamp"],
-            "ticked": false,
-            "displayName": something,
-          });
-           prev_quadrant2.delete();
-        }
-      }
-  }
   //call to add complete task and then delete the task
   void checkbox(String documnent,bool? value, DocumentSnapshot documentSnapshot) async{
     DocumentReference quadrant1  = FirebaseFirestore.instance.collection('Users').doc(uid).collection('Mytask').doc(documnent);
@@ -207,7 +147,6 @@ class TestAppState extends State<TestApp>{
       suggestList.forEach((element) {
         if(element.contains(query))
           lastlist.add(element);
-
       });
       
 
@@ -707,13 +646,13 @@ class TestAppState extends State<TestApp>{
                 //See list button
                 if(change_state==0)
                   // Listview for quadrant 1
-                  AddList_State(Textadd: textadd,ondismissed: dismiss,firebaselist: firebaselist,firebasequery: users,flag: change_state,checkbox: checkbox,
-                   update: update,
+                  AddList_State(Textadd: textadd,firebaselist: firebaselist,firebasequery: users,flag: change_state,checkbox: checkbox,
+
                  )
                 else
                   //Listview for quadrant 2
-                     AddList_State(Textadd: textadd,ondismissed: dismiss,firebaselist: firebaselist,firebasequery: quadrant2,flag: change_state,
-                     checkbox: checkbox, update:update,
+                     AddList_State(Textadd: textadd,firebaselist: firebaselist,firebasequery: quadrant2,flag: change_state,
+                     checkbox: checkbox,
                      )
 
               ]),
