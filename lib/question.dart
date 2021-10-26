@@ -6,11 +6,9 @@ import 'package:flutter/widgets.dart';
 
 class AddList_State  extends StatelessWidget{
   bool _value = false;
-  List Textadd ;
+
 
   Function(String,bool,DocumentSnapshot) checkbox;
-
-  Stream<DocumentSnapshot> firebaselist;
   Stream<QuerySnapshot>firebasequery;
 
 
@@ -44,7 +42,7 @@ class AddList_State  extends StatelessWidget{
       });
     }
    int flag;
-  AddList_State({required this.Textadd,required this.firebaselist,required this.firebasequery,required this.flag,
+  AddList_State({required this.firebasequery,required this.flag,
   required this.checkbox,
   });
   List list1=[''];

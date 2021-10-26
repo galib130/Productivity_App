@@ -31,7 +31,7 @@ class TestAppState extends State<TestApp>{
   var time_picked=1;
   var date_difference= 0;
   var time_difference=0;
-  List<String> textadd =<String>['Do laundry'];
+
   var addquest=0;
   var addquest1=0;
   var flagofflist=0;
@@ -353,10 +353,7 @@ class TestAppState extends State<TestApp>{
         setState(() {
           time = pickedTime;
           int datenow=TimeOfDay.now().hour*3600+TimeOfDay.now().minute*60;
-          // if(time.period.toString()== 'DayPeriod.am')
-          // _namecontroller.text=  _namecontroller.text+ ' ' +'   '+ time.hour.toString()+':'+time.minute.toString() +'am';
-          // if(time.period.toString()== 'DayPeriod.pm')
-          //   _namecontroller.text=  _namecontroller.text+ ' ' +'   '+ time.hour.toString()+':'+time.minute.toString() +'pm';
+
           _timecontroller.clear();
           if(time.period.toString()== 'DayPeriod.am')
             _timecontroller.text=    time.hour.toString()+':'+time.minute.toString() +'am';
@@ -386,7 +383,7 @@ class TestAppState extends State<TestApp>{
             backgroundColor: Colors.blue,
               title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [change_state==0?Text("Quadrant 1"):Text("Quadrant 2"),
+              children: [change_state==0?Text("Active"):Text("Secondary"),
 
               Align(
                 alignment: Alignment.topRight,
@@ -567,8 +564,6 @@ class TestAppState extends State<TestApp>{
                           .doc(_namecontroller.text);
                       DocumentReference quadrant2 = FirebaseFirestore.instance.collection(
                           'Users').doc(uid).collection('Quadrant2').doc(_namecontroller.text);
-
-               
                       totalDate=compareDate;
                         date_difference=0;
                         time_difference=0;
@@ -604,6 +599,8 @@ class TestAppState extends State<TestApp>{
                      onPressed: () {
                        add();
                        _namecontroller.clear();
+                       _timecontroller.clear();
+                       _datecontroller.clear();
 
                      },
                      icon: Icon(Icons.add_box_rounded,),
@@ -646,12 +643,12 @@ class TestAppState extends State<TestApp>{
                 //See list button
                 if(change_state==0)
                   // Listview for quadrant 1
-                  AddList_State(Textadd: textadd,firebaselist: firebaselist,firebasequery: users,flag: change_state,checkbox: checkbox,
+                  AddList_State(firebasequery: users,flag: change_state,checkbox: checkbox,
 
                  )
                 else
                   //Listview for quadrant 2
-                     AddList_State(Textadd: textadd,firebaselist: firebaselist,firebasequery: quadrant2,flag: change_state,
+                     AddList_State(firebasequery: quadrant2,flag: change_state,
                      checkbox: checkbox,
                      )
 
