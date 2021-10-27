@@ -19,7 +19,7 @@ final TextEditingController passwordController = TextEditingController();
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-            title: Text('Sign In to Jarvia')
+            title: Text('Sign up to Productivity App')
         ),
         body: Form(
 

@@ -5,7 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:jarvia/open.dart';
 import 'TestApp.dart';
 import 'TestAppState.dart';
-import 'question.dart';
+import 'ListView.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +20,7 @@ import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'average_chart.dart';
+import "package:flutter/services.dart";
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
   'high_importance_channel', // id
   'High Importance Notifications', // title
@@ -38,6 +39,8 @@ FlutterLocalNotificationsPlugin();
 
 
 Future<void> main() async {
+
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   final NotificationAppLaunchDetails? notificationAppLaunchDetails =
@@ -64,7 +67,13 @@ Future<void> main() async {
   tz.initializeTimeZones();
   final Future<FirebaseApp> fbapp = Firebase.initializeApp();
 
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,DeviceOrientation.portraitDown
+  ]);
+
   runApp(
+
    MultiProvider(
   providers: [
   Provider<FlutterFireAuthService>(
@@ -80,6 +89,7 @@ Future<void> main() async {
   initialData: null,
   )
   ],
+
  builder:(context,_) {
     return MyApp();
 }));

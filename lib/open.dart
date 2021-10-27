@@ -40,7 +40,7 @@ class _OpenViewState extends State<OpenView>{
               SizedBox(height: 100,),
              Center(
 
-               child: Text('Jarvia',style: TextStyle(fontSize: 70),), ),
+               child: Text('Productivity App',style: TextStyle(fontSize: 70),), ),
               SizedBox(height: 120,),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -71,7 +71,7 @@ class _OpenViewState extends State<OpenView>{
 
                 );
               },
-              child: Text("Sign In"),
+              child: Text("Sign up"),
 
             ),
 

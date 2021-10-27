@@ -19,7 +19,7 @@ class _Login_state extends State<Login>{
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-            title: Text('Jarvia log in')
+            title: Text('Productivity log in')
         ),
         body: Form(
           child: Column(

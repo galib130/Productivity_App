@@ -2,11 +2,12 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'TestApp.dart';
 import 'main.dart';
-import 'question.dart';
+import 'ListView.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,7 @@ import 'backendservice.dart';
 import 'notification.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'Alertdialogue.dart';
 
  List<String> textadd1 =<String>['S/W Lab','Maths'];
 final firebaseinstance=FirebaseFirestore.instance;
@@ -36,10 +38,11 @@ class TestAppState extends State<TestApp>{
   var addquest1=0;
   var flagofflist=0;
   var quest = 0;
-  TextEditingController _namecontroller = TextEditingController();
+  TextEditingController _taskcontroller = TextEditingController();
   TextEditingController _timecontroller= TextEditingController();
   TextEditingController _datecontroller= TextEditingController();
   TextEditingController _secondcontroller= TextEditingController();
+  TextEditingController _descriptioncontroller= TextEditingController();
 
   String Task='';
   DateTime currentDate =DateTime.now();
@@ -110,6 +113,10 @@ class TestAppState extends State<TestApp>{
 
       });
   }
+
+
+
+
   Widget build(BuildContext context) {
     final Stream <QuerySnapshot> users=FirebaseFirestore.instance.collection('Users').doc(uid).collection('Mytask').orderBy('Timestamp').snapshots(includeMetadataChanges: true);
     final Stream <QuerySnapshot> quadrant2=FirebaseFirestore.instance.collection('Users').doc(uid).collection('Quadrant2').orderBy('Timestamp').snapshots(includeMetadataChanges: true);
@@ -182,9 +189,12 @@ class TestAppState extends State<TestApp>{
         // var date_time_data = get_date_time_data.data() as Map;
         if (flag == 0) {
           print(task);
-          print(_namecontroller.text);
-          users.doc().set({"Name": task, "Timestamp": time, "difference":time_difference+date_difference, "ticked": false,"setTime": _datecontroller.text+'    '+_timecontroller.text , "displayName": _namecontroller.text,
+          print(_taskcontroller.text);
+          users.doc().set({"Name": task, "Timestamp": time, "difference":time_difference+date_difference, "ticked": false,"setTime": _datecontroller.text+'    '+_timecontroller.text , "displayName": _taskcontroller.text,
             "notification id": _datecontroller.text.trim()+_timecontroller.text.trim()+_secondcontroller.text.trim(),
+            "description":_descriptioncontroller.text.trim(),
+            "date": _datecontroller.text.trim(),
+            "time":_timecontroller.text.trim(),
 
 
           },
@@ -196,9 +206,12 @@ class TestAppState extends State<TestApp>{
             "Timestamp": time,
             "ticked": false,
             "setTime": _datecontroller.text+'    '+_timecontroller.text,
-            "displayName": _namecontroller.text,
+            "displayName": _taskcontroller.text,
             "difference": time_difference+date_difference,
             "notification id":_datecontroller.text.trim()+_timecontroller.text.trim()+_secondcontroller.text.trim(),
+            "description":_descriptioncontroller.text.trim(),
+            "date": _datecontroller.text.trim(),
+            "time":_timecontroller.text.trim(),
 
           }, SetOptions(merge: true));
         }
@@ -248,14 +261,11 @@ class TestAppState extends State<TestApp>{
     //Function to set a new session
     void set_session ()  async {
   setState(() {
-    CollectionReference collectquadrant1 = FirebaseFirestore.instance.collection('Users').doc(uid).collection("q1_session");
     DocumentReference session_time= FirebaseFirestore.instance.collection("Users").doc(uid).collection("session_time").doc("time");
-
     DocumentReference q1_document=  FirebaseFirestore.instance.collection('Users').doc(uid).collection("session").doc('Quadrant1');
     DocumentReference q2_document=  FirebaseFirestore.instance.collection('Users').doc(uid).collection("session").doc('Quadrant2');
     DocumentReference avg_q1_document= FirebaseFirestore.instance.collection('Users').doc(uid).collection("average_session").doc('Quadrant1');
     DocumentReference avg_q2_document= FirebaseFirestore.instance.collection('Users').doc(uid).collection("average_session").doc('Quadrant2');
-
     addwithtoday=today.add(new Duration(minutes: 1));
     DateTime currentdate=DateTime.now();
     addwithtoday=currentdate.add(new Duration(minutes: 1));
@@ -268,31 +278,32 @@ class TestAppState extends State<TestApp>{
     q1_document.set({
       "Name":0,
       "color":'0xFF34c9eb',
-      "xaxis":'Quadrant1',
+      "xaxis":'Active',
       "time":time.toDate().toString(),
     });
 
     q2_document.set({
       "Name":0,
       "color":'0xFFa531e8',
-      "xaxis":'Quadrant2',
+      "xaxis":'Secondary',
       "time":time.toDate().toString(),
     });
 
     avg_q1_document.set({
       "Name":FieldValue.increment(0),
       "color":'0xFFa531e8',
-      "xaxis":'Quadrant1',
+      "xaxis":'Active',
       "session": FieldValue.increment(1),
 
     },SetOptions(merge: true));
     avg_q2_document.set({
       "Name":FieldValue.increment(0),
       "color":'0xFF34c9eb',
-      "xaxis":'Quadrant2',
+      "xaxis":'Secondary',
       "session": FieldValue.increment(1),
 
     },SetOptions(merge: true));
+    Fluttertoast.showToast(msg: "New Session Added",backgroundColor: Colors.blue);
 
   });
 }
@@ -301,12 +312,12 @@ class TestAppState extends State<TestApp>{
     void add(){
         if(change_state==0) {           //flag 0 for quadrant 1
 
-          Add_Data_to_Backend(_namecontroller.text.trim() + _datecontroller.text.trim() + _timecontroller.text.trim(),
+          Add_Data_to_Backend(_taskcontroller.text.trim() + _datecontroller.text.trim() + _timecontroller.text.trim(),
               change_state); // calls the function which adds to firebase
         }
         else       //flag1 for quadrant 2
         {
-        Add_Data_to_Backend(_namecontroller.text.trim() + _datecontroller.text.trim() + _timecontroller.text.trim(),change_state);
+        Add_Data_to_Backend(_taskcontroller.text.trim() + _datecontroller.text.trim() + _timecontroller.text.trim(),change_state);
         }
 
     }
@@ -319,9 +330,6 @@ class TestAppState extends State<TestApp>{
     }
     //Function to select date
     Future<Null> _selectDate(BuildContext context) async {
-      
-
-
       final pickedDate = await showDatePicker(
           context: context,
           initialDate: currentDate,
@@ -407,10 +415,10 @@ class TestAppState extends State<TestApp>{
 
         });
     }
-    //(uid);
-    return MaterialApp(
 
-        home: Scaffold(
+    return
+
+         Scaffold(
 
           appBar: AppBar(
             backgroundColor: Colors.blue,
@@ -427,7 +435,6 @@ class TestAppState extends State<TestApp>{
                    setState(() {
                      context.read<FlutterFireAuthService>().signOut();
                      //Navigator.of(context).pop();
-
                      Navigator.of(context)
                          .pushNamedAndRemoveUntil('/openview', (Route<dynamic> route) => false);
 
@@ -458,7 +465,7 @@ class TestAppState extends State<TestApp>{
                      change(0);
                      Navigator.of(context)
                          .pushNamedAndRemoveUntil('/profile', (Route<dynamic> route) => false);
-                     }, child: Text('Quadrant 1'),
+                     }, child: Text('Active'),
                       style: ElevatedButton.styleFrom(
                           primary: Colors.blue,
                           onPrimary: Colors.black
@@ -477,7 +484,7 @@ class TestAppState extends State<TestApp>{
                             .pushNamedAndRemoveUntil('/profile', (Route<dynamic> route) => false);
                        // Navigator.of(context).pop();
                       },
-                        child: Text('Quadrant 2'),
+                        child: Text('Secondary'),
                         style: ElevatedButton.styleFrom(
                             primary: Colors.blue,
                             onPrimary: Colors.black
@@ -544,161 +551,164 @@ class TestAppState extends State<TestApp>{
             ),
           ),
           body:
-          Column(
-              mainAxisSize: MainAxisSize.max,
-              children:[
-                Row(children: [
-                  //Button to select date
-                  ElevatedButton(
-                    onPressed: (){
-                      _selectDate(context);
-                    },
-                    child: Text('Select Date'),
-                    style: ElevatedButton.styleFrom(
-                     shape: RoundedRectangleBorder(
-                       borderRadius: BorderRadius.circular(50),
-                     )
-                    ),
-                  ),
-                  //Button to select time
-                  ElevatedButton(
-                    child: Text('Select Time'),
-                    style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
+                Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children:[
+                      Row(
+                        children: [
+                          ElevatedButton(
+
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.cyan,
+
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),),
+                              onPressed: ()async{  //ADD button
+
+                                add();
+                                print(difference.toString() + 'difference');
+
+
+                                var get_date_time_data = await set_date_time.get();
+                                var date_time_data = get_date_time_data.data() as Map;
+
+                                if(date_difference!=0|| time_difference!=0) {
+                                  setState(() {
+                                    difference=date_difference+time_difference;
+
+                                    NotificationApi.showScheduledNotification(
+                                        id: ( _datecontroller.text.trim() + _timecontroller.text.trim()+_secondcontroller.text
+                                            .trim()).hashCode,
+                                        title: _taskcontroller.text,
+                                        body: 'Hey you added this task',
+                                        scheduledDate: DateTime.now().add(
+                                            Duration(seconds: (date_time_data['date difference']+date_time_data['time difference']))));
+
+                                    totalDate=compareDate;
+                                    date_difference=0;
+                                    time_difference=0;
+
+                                    print(date_picked);
+                                    difference=0;
+                                  });
+
+                                }
+                                else{
+                                  print('not notifying');
+                                }
+                                set_date_time.set({
+                                  "date difference" : 0,
+                                  "time difference": 0,
+
+                                });
+                                _datecontroller.clear();
+                                _timecontroller.clear();
+                                _taskcontroller.clear();
+                                _secondcontroller.clear();
+                                _descriptioncontroller.clear();
+
+                              },
+                              child: Text('Set Notification'),
+                            ),//For setting up notification
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  primary: Colors.cyan,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+
+                                ),),
+
+                              onPressed: (){
+                            createAlertDialog(context,_taskcontroller, _datecontroller,
+                                _timecontroller,_descriptioncontroller,  _selectDate,_selectTime);
+                          }, child: Text('Detailed Task')),//For Detail view
+                        ],
+                      ),
+
+                      //Type Input Field
+                      TypeAheadField(
+                        //cursorHeight: 2,
+                        textFieldConfiguration: TextFieldConfiguration(
+                          autofocus: false,
+                          cursorColor: Colors.black ,
+                          controller: _taskcontroller,
+                          decoration: InputDecoration(
+                            hintText: "Items",
+                            filled: true,
+                            fillColor: Colors.cyan,
+                            suffixIcon: IconButton(
+                              color: Colors.black,
+                              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 2),
+                              onPressed: () {
+                                add();
+                                _taskcontroller.clear();
+                                _timecontroller.clear();
+                                _datecontroller.clear();
+                                _secondcontroller.clear();
+                                _descriptioncontroller.clear();
+
+                              },
+                              icon: Icon(Icons.add_box_rounded,),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue),
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                            ),
+                            disabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue),
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                            ),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(color: Colors.blue),
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                            ),
+                          ),
+                        ),
+                        suggestionsCallback: (pattern)async{
+                          return await suggestionList(pattern);
+                        },
+                        itemBuilder: (context, suggestion) {
+                          return Container(
+                            child: ListTile(
+                              tileColor: Colors.cyan,
+                              title: Text(suggestion.toString()),
+
+                            ),
+
+                          ) ;
+                        },
+                        onSuggestionSelected: (suggestion){
+                          _taskcontroller.text= suggestion.toString() ;
+                        },
+                        hideOnLoading: true,
+
+                      ) ,
+
+                      SizedBox(height: 10,child: Container(),),
+
+
+                      //See list button depending on state
+                      if(change_state==0)
+                      // Listview for quadrant 1
+                        AddList_State(firebasequery: users,flag: change_state,checkbox: checkbox,
+                          set_date: _selectDate, set_time: _selectTime, date_controller: _datecontroller,
+                          time_controller: _timecontroller,
+                          color: Colors.blue
+
+
                         )
-                    ),
-                    onPressed:(){
-                      _selectTime(context);
-                      },),
-                  //Button to select Notification
-                  ElevatedButton(
+                      else
+                      //Listview for quadrant 2
+                        AddList_State(firebasequery: quadrant2,flag: change_state,
+                          checkbox: checkbox,set_date: _selectDate, set_time: _selectTime,
+                          date_controller: _datecontroller,
+                          time_controller: _timecontroller,
+                          color: Colors.yellow
+                        )
 
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                      ),),
-                    onPressed: ()async{  //ADD button
-
-                      add();
-                    print(difference.toString() + 'difference');
-
-
-                    var get_date_time_data = await set_date_time.get();
-                    var date_time_data = get_date_time_data.data() as Map;
-
-                    if(date_difference!=0|| time_difference!=0) {
-                      setState(() {
-                      difference=date_difference+time_difference;
-
-                      NotificationApi.showScheduledNotification(
-                          id: ( _datecontroller.text.trim() + _timecontroller.text.trim()+_secondcontroller.text
-                          .trim()).hashCode,
-                          title: _namecontroller.text,
-                          body: 'Hey you added this task',
-                          scheduledDate: DateTime.now().add(
-                              Duration(seconds: (date_time_data['date difference']+date_time_data['time difference']))));
-
-                      totalDate=compareDate;
-                        date_difference=0;
-                        time_difference=0;
-
-                        print(date_picked);
-                        difference=0;
-                       });
-
-                    }
-                    else{
-                      print('not notifying');
-                    }
-                      set_date_time.set({
-                        "date difference" : 0,
-                        "time difference": 0,
-
-                      });
-                    _datecontroller.clear();
-                    _timecontroller.clear();
-                    _namecontroller.clear();
-                    _secondcontroller.clear();
-
-                  },
-                    child: Text('Set Notification'),
-                  ),
-                ],),
-             //Type Input Field
-             TypeAheadField(
-               //cursorHeight: 2,
-               textFieldConfiguration: TextFieldConfiguration(
-                 autofocus: false,
-                 cursorColor: Colors.black ,
-                 controller: _namecontroller,
-                 decoration: InputDecoration(
-                 hintText: "Items",
-                 filled: true,
-                 fillColor: Colors.cyan,
-                   suffixIcon: IconButton(
-                     color: Colors.black,
-                     padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 2),
-                     onPressed: () {
-                       add();
-                       _namecontroller.clear();
-                       _timecontroller.clear();
-                       _datecontroller.clear();
-                       _secondcontroller.clear();
-
-                     },
-                     icon: Icon(Icons.add_box_rounded,),
-                   ),
-                 enabledBorder: OutlineInputBorder(
-                   borderSide: BorderSide(color: Colors.blue),
-                   borderRadius: BorderRadius.all(Radius.circular(30)),
-                 ),
-                 disabledBorder: OutlineInputBorder(
-                   borderSide: BorderSide(color: Colors.blue),
-                   borderRadius: BorderRadius.all(Radius.circular(30)),
-                 ),
-                 border: OutlineInputBorder(
-                   borderSide: BorderSide(color: Colors.blue),
-                   borderRadius: BorderRadius.all(Radius.circular(30)),
-                 ),
-               ),
-               ),
-               suggestionsCallback: (pattern)async{
-                 return await suggestionList(pattern);
-                 },
-               itemBuilder: (context, suggestion) {
-                 return Container(
-                     child: ListTile(
-                       tileColor: Colors.cyan,
-                       title: Text(suggestion.toString()),
-
-                     ),
-
-                   ) ;
-                   },
-                 onSuggestionSelected: (suggestion){
-              _namecontroller.text= suggestion.toString() ;
-    },
-          hideOnLoading: true,
-
-             ) ,
-                SizedBox(height: 10),
-
-                //See list button
-                if(change_state==0)
-                  // Listview for quadrant 1
-                  AddList_State(firebasequery: users,flag: change_state,checkbox: checkbox,
-
-                 )
-                else
-                  //Listview for quadrant 2
-                     AddList_State(firebasequery: quadrant2,flag: change_state,
-                     checkbox: checkbox,
-                     )
-
-              ]),
-
-
-        ));
+                    ]),
+         );
   }
 }
