@@ -2,7 +2,7 @@
     package="com.example.jarvia">
     <uses-permission android:name="android.permission.VIBRATE"/>
    <application
-        android:label="jarvia"
+        android:label="Proda"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

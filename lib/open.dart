@@ -40,7 +40,7 @@ class _OpenViewState extends State<OpenView>{
               SizedBox(height: 100,),
              Center(
 
-               child: Text('Productivity App',style: TextStyle(fontSize: 70),), ),
+               child: Text('Proda',style: TextStyle(fontSize: 70),), ),
               SizedBox(height: 120,),
             ElevatedButton(
               style: ElevatedButton.styleFrom(

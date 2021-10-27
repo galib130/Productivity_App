@@ -19,7 +19,7 @@ final TextEditingController passwordController = TextEditingController();
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-            title: Text('Sign up to Productivity App')
+            title: Text('Sign up to Proda')
         ),
         body: Form(
 
