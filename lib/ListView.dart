@@ -44,6 +44,7 @@ class AddList_State  extends StatelessWidget{
           Container(
 
             height: 500,
+            width: 550,
             child:Column(
                   mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -51,19 +52,23 @@ class AddList_State  extends StatelessWidget{
                 Text('Task'),
                 Expanded(
                   child: TextField(
+                    maxLines: 1,
                     controller: update_controller,
+
                   ),
                 ),
                 Text('Description'),
 
                 Expanded(
                   child: TextField(
+                    maxLines: 1,
                     controller: description_controller,
                   ),
                 ),
                 Expanded(
                   flex: 1,
                   child: TextField(
+                    maxLines: 1,
                     decoration: InputDecoration(
                         hintText: 'Date'
                     ),
@@ -87,6 +92,7 @@ class AddList_State  extends StatelessWidget{
                 Expanded(
                   flex: 1,
                   child: TextField(
+                    maxLines: 1,
                     decoration: InputDecoration(
                         hintText: 'Time'
                     ),
@@ -143,6 +149,7 @@ class AddList_State  extends StatelessWidget{
           }
           return ListView(
             shrinkWrap: true,
+
             children: snapshot.data!.docs.map((DocumentSnapshot document) {
             Map<dynamic, dynamic> data = document.data()! as Map<dynamic, dynamic>;
             return Dismissible(key: UniqueKey(),
@@ -163,36 +170,56 @@ class AddList_State  extends StatelessWidget{
 
                   },
                   child:
-                      ListTile(
-                        title: Container(child:Column(
-                           
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                      Column(
+                        children: [
+                          Container(
 
-                            children: [
-                             Row(
-                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                 children: [
-                                   Expanded(
-                                     child: Text(data['displayName'].toString(),style:
-                                 new TextStyle(
-                                     fontSize: 20
-                                 ),),
-                                   ),
-                                   Checkbox(
-                                   autofocus: true,
-                                       value: data['ticked'],
-                                       onChanged: (bool? value){
-                                     checkbox(data['Name'],value!,document);
-                                   }),
-                                 ]),
-                           if(data.containsValue(data['setTime']))
+                            decoration: BoxDecoration(
 
-                           Text(data['setTime'].toString(),style:
-                               TextStyle(fontStyle: FontStyle.italic),)
-                            ])
-                           ,),
+                              borderRadius: BorderRadius.circular(5),
+                                image:  DecorationImage(image: new AssetImage('assets/listtile.jpg'),fit: BoxFit.cover)
+                            ),
+                            child: Column(
+                              children: [
+                                ListTile(
+                                    title: Container(child:Column(
 
-                        tileColor: color),
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+
+
+                                        children: [
+                                         Row(
+                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                             children: [
+                                               Expanded(
+                                                 child: Text(data['displayName'].toString(),style:
+                                             new TextStyle(
+                                                 fontSize: 20
+                                             ),),
+                                               ),
+                                               Checkbox(
+                                               autofocus: true,
+                                                   value: data['ticked'],
+                                                   onChanged: (bool? value){
+                                                 checkbox(data['Name'],value!,document);
+                                               }),
+                                             ]),
+                                       if(data.containsValue(data['setTime']))
+
+                                       Text(data['setTime'].toString(),style:
+                                           TextStyle(fontStyle: FontStyle.italic),)
+                                        ])
+                                       ,),
+
+                                    ),
+
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 5,)
+                        ],
+                      ),
+
                 )
             );
           }).toList(),

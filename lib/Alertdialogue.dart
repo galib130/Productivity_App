@@ -16,6 +16,7 @@ createAlertDialog(BuildContext context,TextEditingController  _namecontroller,Te
         content:
         Container(
           height: 450,
+          width: 550,
 
           child:Column(
             mainAxisSize: MainAxisSize.max,
@@ -25,7 +26,7 @@ createAlertDialog(BuildContext context,TextEditingController  _namecontroller,Te
               Expanded(
                 flex: 1 ,
                 child: TextField(
-                  maxLines: null,
+                  maxLines: 1,
                   decoration: InputDecoration(
                       hintText: 'Task'
                   ),
@@ -37,7 +38,7 @@ createAlertDialog(BuildContext context,TextEditingController  _namecontroller,Te
                 flex: 1 ,
 
                 child: TextField(
-                  maxLines: null,
+                  maxLines: 1,
                   decoration: InputDecoration(
                       hintText: 'Description'
                   ),
@@ -53,6 +54,7 @@ createAlertDialog(BuildContext context,TextEditingController  _namecontroller,Te
                   Expanded(
                     flex: 1,
                     child: TextField(
+                      maxLines: 1,
                       decoration: InputDecoration(
                           hintText: 'Date'
                       ),
@@ -61,6 +63,7 @@ createAlertDialog(BuildContext context,TextEditingController  _namecontroller,Te
                     ),
                   ),
               ElevatedButton(
+
                 onPressed: (){
                   _selectDate(context);
                 },
@@ -76,6 +79,7 @@ createAlertDialog(BuildContext context,TextEditingController  _namecontroller,Te
                   Expanded(
                     flex: 1,
                     child: TextField(
+                      maxLines: 1,
                       decoration: InputDecoration(
                           hintText: 'Time'
                       ),

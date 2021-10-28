@@ -551,164 +551,179 @@ class TestAppState extends State<TestApp>{
             ),
           ),
           body:
-                Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children:[
-                      Row(
-                        children: [
-                          ElevatedButton(
+                Container(
+                  decoration:
 
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.cyan,
+                  BoxDecoration(
+                      image:  DecorationImage(image: new AssetImage('assets/gradient.png'),fit: BoxFit.cover)
+                  ),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children:[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
 
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),),
-                              onPressed: ()async{  //ADD button
-
-                                add();
-                                print(difference.toString() + 'difference');
-
-
-                                var get_date_time_data = await set_date_time.get();
-                                var date_time_data = get_date_time_data.data() as Map;
-
-                                if(date_difference!=0|| time_difference!=0) {
-                                  setState(() {
-                                    difference=date_difference+time_difference;
-
-                                    NotificationApi.showScheduledNotification(
-                                        id: ( _datecontroller.text.trim() + _timecontroller.text.trim()+_secondcontroller.text
-                                            .trim()).hashCode,
-                                        title: _taskcontroller.text,
-                                        body: 'Hey you added this task',
-                                        scheduledDate: DateTime.now().add(
-                                            Duration(seconds: (date_time_data['date difference']+date_time_data['time difference']))));
-
-                                    totalDate=compareDate;
-                                    date_difference=0;
-                                    time_difference=0;
-
-                                    print(date_picked);
-                                    difference=0;
-                                  });
-
-                                }
-                                else{
-                                  print('not notifying');
-                                }
-                                set_date_time.set({
-                                  "date difference" : 0,
-                                  "time difference": 0,
-
-                                });
-                                _datecontroller.clear();
-                                _timecontroller.clear();
-                                _taskcontroller.clear();
-                                _secondcontroller.clear();
-                                _descriptioncontroller.clear();
-
-                              },
-                              child: Text('Set Notification'),
-                            ),//For setting up notification
-                          ElevatedButton(
-                              style: ElevatedButton.styleFrom(
+                                style: ElevatedButton.styleFrom(
                                   primary: Colors.cyan,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
 
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),),
+                                onPressed: ()async{  //ADD button
+
+                                  add();
+                                  print(difference.toString() + 'difference');
+
+
+                                  var get_date_time_data = await set_date_time.get();
+                                  var date_time_data = get_date_time_data.data() as Map;
+
+                                  if(date_difference!=0|| time_difference!=0) {
+                                    setState(() {
+                                      difference=date_difference+time_difference;
+
+                                      NotificationApi.showScheduledNotification(
+                                          id: ( _datecontroller.text.trim() + _timecontroller.text.trim()+_secondcontroller.text
+                                              .trim()).hashCode,
+                                          title: _taskcontroller.text,
+                                          body: 'Hey you added this task',
+                                          scheduledDate: DateTime.now().add(
+                                              Duration(seconds: (date_time_data['date difference']+date_time_data['time difference']))));
+
+                                      totalDate=compareDate;
+                                      date_difference=0;
+                                      time_difference=0;
+
+                                      print(date_picked);
+                                      difference=0;
+                                    });
+
+                                  }
+                                  else{
+                                    print('not notifying');
+                                  }
+                                  set_date_time.set({
+                                    "date difference" : 0,
+                                    "time difference": 0,
+
+                                  });
+                                  _datecontroller.clear();
+                                  _timecontroller.clear();
+                                  _taskcontroller.clear();
+                                  _secondcontroller.clear();
+                                  _descriptioncontroller.clear();
+
+                                },
+                                child: Text('Set Notification',style: TextStyle(
+                                  color: Colors.black
                                 ),),
+                              ),
+                            SizedBox(width: 20,),
+                            //For setting up notification
+                            ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.cyan,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
 
-                              onPressed: (){
-                            createAlertDialog(context,_taskcontroller, _datecontroller,
-                                _timecontroller,_descriptioncontroller,  _selectDate,_selectTime);
-                          }, child: Text('Detailed Task')),//For Detail view
-                        ],
-                      ),
+                                  ),),
 
-                      //Type Input Field
-                      TypeAheadField(
-                        //cursorHeight: 2,
-                        textFieldConfiguration: TextFieldConfiguration(
-                          autofocus: false,
-                          cursorColor: Colors.black ,
-                          controller: _taskcontroller,
-                          decoration: InputDecoration(
-                            hintText: "Items",
-                            filled: true,
-                            fillColor: Colors.cyan,
-                            suffixIcon: IconButton(
-                              color: Colors.black,
-                              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 2),
-                              onPressed: () {
-                                add();
-                                _taskcontroller.clear();
-                                _timecontroller.clear();
-                                _datecontroller.clear();
-                                _secondcontroller.clear();
-                                _descriptioncontroller.clear();
+                                onPressed: (){
+                              createAlertDialog(context,_taskcontroller, _datecontroller,
+                                  _timecontroller,_descriptioncontroller,  _selectDate,_selectTime);
+                            }, child: Text('Detailed Task',style: TextStyle(
+                              color: Colors.black
+                            ),),),//For Detail view
+                          ],
+                        ),
 
-                              },
-                              icon: Icon(Icons.add_box_rounded,),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.blue),
-                              borderRadius: BorderRadius.all(Radius.circular(30)),
-                            ),
-                            disabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.blue),
-                              borderRadius: BorderRadius.all(Radius.circular(30)),
-                            ),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.blue),
-                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                        //Type Input Field
+                        TypeAheadField(
+                          //cursorHeight: 2,
+                          textFieldConfiguration: TextFieldConfiguration(
+                            autofocus: false,
+                            cursorColor: Colors.black ,
+                            controller: _taskcontroller,
+                            maxLines: 1,
+                            decoration: InputDecoration(
+                              hintText: "Items",
+                              filled: true,
+                              fillColor: Colors.cyan,
+                              suffixIcon: IconButton(
+                                color: Colors.black,
+                                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 2),
+                                onPressed: () {
+                                  add();
+                                  _taskcontroller.clear();
+                                  _timecontroller.clear();
+                                  _datecontroller.clear();
+                                  _secondcontroller.clear();
+                                  _descriptioncontroller.clear();
+
+                                },
+                                icon: Icon(Icons.add_box_rounded,),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.blue),
+                                borderRadius: BorderRadius.all(Radius.circular(30)),
+                              ),
+                              disabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.blue),
+                                borderRadius: BorderRadius.all(Radius.circular(30)),
+                              ),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.blue),
+                                borderRadius: BorderRadius.all(Radius.circular(30)),
+                              ),
                             ),
                           ),
-                        ),
-                        suggestionsCallback: (pattern)async{
-                          return await suggestionList(pattern);
-                        },
-                        itemBuilder: (context, suggestion) {
-                          return Container(
-                            child: ListTile(
-                              tileColor: Colors.cyan,
-                              title: Text(suggestion.toString()),
+                          suggestionsCallback: (pattern)async{
+                            return await suggestionList(pattern);
+                          },
+                          itemBuilder: (context, suggestion) {
+                            return Container(
+                              child: ListTile(
+                                tileColor: Colors.cyan,
+                                title: Text(suggestion.toString()),
 
-                            ),
+                              ),
 
-                          ) ;
-                        },
-                        onSuggestionSelected: (suggestion){
-                          _taskcontroller.text= suggestion.toString() ;
-                        },
-                        hideOnLoading: true,
+                            ) ;
+                          },
+                          onSuggestionSelected: (suggestion){
+                            _taskcontroller.text= suggestion.toString() ;
+                          },
+                          hideOnLoading: true,
 
-                      ) ,
+                        ) ,
 
-                      SizedBox(height: 10,child: Container(),),
-
-
-                      //See list button depending on state
-                      if(change_state==0)
-                      // Listview for quadrant 1
-                        AddList_State(firebasequery: users,flag: change_state,checkbox: checkbox,
-                          set_date: _selectDate, set_time: _selectTime, date_controller: _datecontroller,
-                          time_controller: _timecontroller,
-                          color: Colors.blue
+                        SizedBox(height: 10,child: Container(),),
 
 
-                        )
-                      else
-                      //Listview for quadrant 2
-                        AddList_State(firebasequery: quadrant2,flag: change_state,
-                          checkbox: checkbox,set_date: _selectDate, set_time: _selectTime,
-                          date_controller: _datecontroller,
-                          time_controller: _timecontroller,
-                          color: Colors.yellow
-                        )
+                        //See list button depending on state
+                        if(change_state==0)
+                        // Listview for quadrant 1
+                          AddList_State(firebasequery: users,flag: change_state,checkbox: checkbox,
+                            set_date: _selectDate, set_time: _selectTime, date_controller: _datecontroller,
+                            time_controller: _timecontroller,
+                            color: Colors.blue
 
-                    ]),
+
+                          )
+                        else
+                        //Listview for quadrant 2
+                          AddList_State(firebasequery: quadrant2,flag: change_state,
+                            checkbox: checkbox,set_date: _selectDate, set_time: _selectTime,
+                            date_controller: _datecontroller,
+                            time_controller: _timecontroller,
+                            color: Colors.yellow
+                          )
+
+                      ]),
+                ),
          );
   }
 }
